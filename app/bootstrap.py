@@ -37,7 +37,6 @@ class ClipboardSqlFormatterApp:
 
     def stop(self) -> None:
         self.state.stop()
-        self.monitor.stop()
         self.refresh_tray()
 
     def toggle_pause(self) -> bool:

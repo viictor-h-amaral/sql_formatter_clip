@@ -1,15 +1,27 @@
+from typing import Any, Callable
+
+from core.interfaces import AppStateProtocol, TrayAdapterProtocol
+
+
 class TrayService:
     """Coordinates tray UI updates for the app state."""
 
-    def __init__(self, state, tray_adapter, *, on_toggle_pause, on_exit) -> None:
+    def __init__(
+        self,
+        state: AppStateProtocol,
+        tray_adapter: TrayAdapterProtocol,
+        *,
+        on_toggle_pause: Callable[[], bool],
+        on_exit: Callable[[], None],
+    ) -> None:
         self.state = state
         self.tray_adapter = tray_adapter
         self._on_toggle_pause = on_toggle_pause
         self._on_exit = on_exit
-        self._tray_icon = None
+        self._tray_icon: Any = None
 
     @property
-    def tray_icon(self):
+    def tray_icon(self) -> Any:
         return self._tray_icon
 
     def build_menu(self):

@@ -1,21 +1,28 @@
 import threading
 import time
+from typing import Optional
 
 from config.settings import POLL_INTERVAL_SECONDS
+from core.interfaces import AppStateProtocol, ClipboardAdapterProtocol, FormatterServiceProtocol
 
 
 class ClipboardMonitor:
     """Polls the clipboard and formats SQL when needed."""
 
-    def __init__(self, state, clipboard_adapter, formatter_service) -> None:
+    def __init__(
+        self,
+        state: AppStateProtocol,
+        clipboard_adapter: ClipboardAdapterProtocol,
+        formatter_service: FormatterServiceProtocol,
+    ) -> None:
         self.state = state
         self.clipboard_adapter = clipboard_adapter
         self.formatter_service = formatter_service
         self._lock = threading.Lock()
-        self._thread = None
+        self._thread: Optional[threading.Thread] = None
 
     @property
-    def thread(self):
+    def thread(self) -> Optional[threading.Thread]:
         return self._thread
 
     def start(self) -> None:

@@ -1,0 +1,43 @@
+from typing import Any, Protocol, runtime_checkable
+
+
+@runtime_checkable
+class AppStateProtocol(Protocol):
+    @property
+    def is_running(self) -> bool: ...
+
+    @property
+    def is_paused(self) -> bool: ...
+
+    @property
+    def last_clipboard_content(self) -> Any: ...
+
+    @last_clipboard_content.setter
+    def last_clipboard_content(self, value: Any) -> None: ...
+
+    def start(self) -> None: ...
+
+    def stop(self) -> None: ...
+
+    def toggle_pause(self) -> bool: ...
+
+
+@runtime_checkable
+class ClipboardAdapterProtocol(Protocol):
+    def paste(self) -> str: ...
+
+    def copy(self, value: str) -> None: ...
+
+
+@runtime_checkable
+class FormatterServiceProtocol(Protocol):
+    def format(self, text: str) -> str: ...
+
+
+@runtime_checkable
+class TrayAdapterProtocol(Protocol):
+    def make_icon(self, *, active: bool): ...
+
+    def build_menu(self, *, pause_label: str, on_pause, on_exit, enabled: bool): ...
+
+    def create_icon(self, *, active: bool, menu): ...
