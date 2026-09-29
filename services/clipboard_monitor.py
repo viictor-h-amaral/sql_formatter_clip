@@ -1,9 +1,13 @@
+import logging
 import threading
 import time
 from typing import Optional
 
+from adapters.clipboard_adapter import ClipboardAdapterError
 from config.settings import POLL_INTERVAL_SECONDS
 from core.interfaces import AppStateProtocol, ClipboardAdapterProtocol, FormatterServiceProtocol
+
+logger = logging.getLogger(__name__)
 
 
 class ClipboardMonitor:
@@ -29,11 +33,13 @@ class ClipboardMonitor:
         with self._lock:
             if self._thread and self._thread.is_alive():
                 return
+            logger.info("Starting clipboard monitor thread.")
             self._thread = threading.Thread(target=self._run_loop, daemon=True)
             self._thread.start()
 
     def stop(self) -> None:
         self.state.stop()
+        logger.info("Stopping clipboard monitor thread.")
 
     def _run_loop(self) -> None:
         while self.state.is_running:
@@ -43,7 +49,8 @@ class ClipboardMonitor:
 
             try:
                 clipboard_content = self.clipboard_adapter.paste()
-            except Exception:
+            except ClipboardAdapterError as exc:
+                logger.warning("Clipboard read error: %s", exc)
                 time.sleep(POLL_INTERVAL_SECONDS)
                 continue
 
@@ -55,7 +62,11 @@ class ClipboardMonitor:
 
             formatted_sql = self.formatter_service.format(clipboard_content)
             if formatted_sql != clipboard_content:
-                self.clipboard_adapter.copy(formatted_sql)
+                try:
+                    self.clipboard_adapter.copy(formatted_sql)
+                except ClipboardAdapterError as exc:
+                    logger.warning("Clipboard write error: %s", exc)
+                    continue
                 self.state.last_clipboard_content = formatted_sql
 
             time.sleep(POLL_INTERVAL_SECONDS)
