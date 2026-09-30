@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 class EnterPosition(Enum):
     RIGHT = 1
     LEFT = 2
@@ -23,21 +24,22 @@ key_word_enter_position = {
     "case": EnterPosition.RIGHT,
     "when": EnterPosition.LEFT,
     "else": EnterPosition.LEFT,
-    "end": EnterPosition.LEFT
+    "end": EnterPosition.LEFT,
 }
+
 
 def add_enter(text: str) -> str:
     text = add_enter_to_key_words(text)
     text = add_enter_to_commas(text)
-
     return text
+
 
 def add_enter_to_key_words(text: str) -> str:
     for key_word, enter_position in key_word_enter_position.items():
-        if (enter_position == EnterPosition.RIGHT or enter_position == EnterPosition.RIGHT_LEFT):
-            text = text.replace(key_word+" ", key_word + "\n")
-        if (enter_position == EnterPosition.LEFT or enter_position == EnterPosition.RIGHT_LEFT):
-            text = text.replace(" "+key_word,  "\n" + key_word)
+        if enter_position in (EnterPosition.RIGHT, EnterPosition.RIGHT_LEFT):
+            text = text.replace(key_word + " ", key_word + "\n")
+        if enter_position in (EnterPosition.LEFT, EnterPosition.RIGHT_LEFT):
+            text = text.replace(" " + key_word, "\n" + key_word)
     return text
 
 
@@ -60,9 +62,9 @@ def add_enter_to_commas(text: str) -> str:
 
     for position in reversed(commas_positions):
         continue_position = position + 1
-        if(text[position + 1] == " "):
+        if text[position + 1] == " ":
             continue_position = position + 2
 
-        text = text[:position + 1] + "\n" + text[continue_position:]
+        text = text[: position + 1] + "\n" + text[continue_position:]
 
     return text

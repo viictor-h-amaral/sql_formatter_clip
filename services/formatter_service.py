@@ -1,7 +1,7 @@
-from helpers.basic_text_formatter import format_text
-from helpers.identor_formatter import add_tab
-from helpers.line_separator_formatter import add_enter
-from helpers.sql_identifier import text_is_query_sql as is_sql_query
+from domain.sql_formatting.detector import text_is_query_sql as is_sql_query
+from domain.sql_formatting.indentation import add_tab
+from domain.sql_formatting.line_breaks import add_enter
+from domain.sql_formatting.normalizer import format_text
 
 
 class FormatterService:
